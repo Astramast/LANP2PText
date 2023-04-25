@@ -1,33 +1,45 @@
 #include <iostream>
-#include <cstring>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <unistd.h>
+using std::cout, std::endl, std::cin;
+#include <string>
+using std::string, std::stoi;
+#include <exception>
+using std::exception;
+#include "SocketHandler.hpp"
 
-#define MAX_CONNECTIONS=1
+uint16_t port_input(const string& message){
+	int input_number=0;
+	bool flag = true;
+	
+	while(flag){
+		cout << message;
+		string input;
+		getline(cin, input);
+		try{
+			input_number = stoi(input);
+		}
+		catch (const exception& e){
+			cout << "That was not a valid integer, please try again." << endl;
+			continue;
+		}
+		if (input_number < 0){
+			cout << "Negative value entered. Exiting program..." << endl;
+			exit(0);
+		}
+		if (input_number > 65535){
+			cout << "This number is too big, enter a value between 0 and 65535." << endl;
+			continue;
+		}
+		flag = false;
+	}
+	return static_cast<std::uint16_t>(input_number);
+}
 
-using namespace std;
+int main(int argc, char *argv[]){
+	std::uint16_t port = port_input("Enter a port (0 to 65535, <0 value to quit) : ");
+	
+	SocketHandler socket(port);
 
-int main(int argc, char *argv[]) {
-    int sockfd;
-    struct sockaddr_in server_addr, client_addr;
-
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1) {
-        cerr << "Error : impossible to create the socket" << endl;
-        return -1;
-    }
-
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(8080); // Port de communication
-    server_addr.sin_addr.s_addr = INADDR_ANY; // Adresse IP locale
-
-    if (bind(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-        cerr << "Error : impossible to link the socket" << endl;
-        return -2;
-    }
-
-    listen(sockfd, MAX_CONNECTIONS); // Le socket écoute jusqu'à 5 connexions entrantes
+    listen(sockfd, 1); // Le socket écoute jusqu'à 1 connexions entrantes
 
     socklen_t client_addr_len = sizeof(client_addr);
     int client_sockfd = accept(sockfd, (struct sockaddr *)&client_addr, &client_addr_len); // Accepter une connexion entrante
