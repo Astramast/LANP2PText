@@ -38,8 +38,14 @@ int main(int argc, char *argv[]){
 	std::uint16_t port = port_input("Enter a port (0 to 65535, <0 value to quit) : ");
 	
 	SocketHandler socket(port);
-
-    listen(sockfd, 1); // Le socket écoute jusqu'à 1 connexions entrantes
+	bool connected = false;
+	if (socket.connect()){
+		connected = true;
+	}
+	if (!connected){
+		socket.accept();
+	}
+	//launch txt exchange
 
     socklen_t client_addr_len = sizeof(client_addr);
     int client_sockfd = accept(sockfd, (struct sockaddr *)&client_addr, &client_addr_len); // Accepter une connexion entrante

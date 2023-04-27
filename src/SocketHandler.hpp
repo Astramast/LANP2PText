@@ -4,6 +4,7 @@
 class SocketHandler{
 	public:
 		SocketHandler(std::uint16_t port);
+		bool connect(const struct sockaddr* addr);
 
 	private:
 	int sockfd;
