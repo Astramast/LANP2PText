@@ -1,12 +1,26 @@
 #include <iostream>
-using std::cerr, std::endl;
+using std::cerr, std::endl, std::cout;
 #include "SocketHandler.hpp"
 #include "config.hpp"
 
-// Public methods
+// Constructors
 
 SocketHandler::SocketHandler(){
 	createSocket();
+	bindSocket(port);
+	listen(sockfd, 1);
+}
+
+// Public methods
+
+bool SocketHandler::connect(const struct sockaddr* addr){
+	if (connect(sockfd, addr, (socklen_t)sizeof(*addr)) < 0){
+		if (errno == ECONNREFUSED){
+			cout << "Connection failed." << endl;
+		}
+		return false;
+	}
+	return true;
 }
 
 // Private methods

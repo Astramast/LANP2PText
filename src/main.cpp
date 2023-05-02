@@ -40,7 +40,6 @@ int main(int argc, char *argv[]){
 	
 	socket.connect(ip, corr_port);
 
-
     int valread = read(client_sockfd, buffer, 1024); // Lire les données envoyées par le client
     cout << "Data received : " << buffer << endl;
 
