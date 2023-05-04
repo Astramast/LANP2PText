@@ -38,14 +38,11 @@ int main(int argc, char *argv[]){
 	string ip = input("Enter corresponding ip : ");
 	std::uint16_t corr_port = port_input("Enter corresponging port : ");
 	
-	socket.connect(ip, corr_port);
-
-    int valread = read(client_sockfd, buffer, 1024); // Lire les données envoyées par le client
-    cout << "Data received : " << buffer << endl;
-
-    close(client_sockfd);
-    close(sockfd);
-
+	int corr_sockfd = socket.connect(ip, corr_port);
+	if (corr_sockfd < 0){
+		socket.accept();
+	}
+	
     return 0;
 }
 

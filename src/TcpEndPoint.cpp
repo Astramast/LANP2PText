@@ -1,17 +1,17 @@
 #include <iostream>
 using std::cerr, std::endl, std::cout;
-#include "SocketHandler.hpp"
+#include "TcpEndPoint.hpp"
 #include "config.hpp"
 
 // Constructors
 
-SocketHandler::SocketHandler(){
+TcpEndPoint::TcpEndPoint(){
 	createSocket();
 }
 
 // Public methods
 
-bool SocketHandler::connect(const string& ip, const std::uint16_t& port){
+bool TcpEndPoint::connect(const string& ip, const std::uint16_t& port){
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr = ip;
 
@@ -24,7 +24,7 @@ bool SocketHandler::connect(const string& ip, const std::uint16_t& port){
 	return true;
 }
 
-void SocketHandler::bindSocket(const std::uint16_t& port){
+void TcpEndPoint::bindSocket(const std::uint16_t& port){
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr = INADDR_ANY;
@@ -35,7 +35,7 @@ void SocketHandler::bindSocket(const std::uint16_t& port){
 	}
 }
 
-int SocketHandler::accept(){
+int TcpEndPoint::accept(){
 	listen(sockfd, MAX_ENTERING_CONNECTION);
 	int in_sockfd = accept(sockfd, addr, sizeof(addr));
 	if (in_sockfd < 0){
@@ -48,7 +48,7 @@ int SocketHandler::accept(){
 
 // Private methods
 
-void SocketHandler::createSocket(){
+void TcpEndPoint::createSocket(){
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	addr.sin_family = AF_INET;
 
