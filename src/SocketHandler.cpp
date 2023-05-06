@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <unistd.h>
 #include <iostream>
 using std::cerr, std::endl, std::cout;
 #include "SocketHandler.hpp"
@@ -23,6 +24,10 @@ SocketHandler::SocketHandler(const std::uint16_t& local_port, const std::uint16_
 	cout << "OUT"<< endl;
 }
 
+SocketHandler::~SocketHandler(){
+	close(sockfd);
+}
+
 // Public methods
 
 //TODO read & write
@@ -39,7 +44,8 @@ void SocketHandler::createSocket(){
 }
 
 bool SocketHandler::connect(){
-	if (::connect(sockfd, (struct sockaddr *)&addr_there, (socklen_t) sizeof(addr_there)) < 0 ){
+	socklen_t size = sizeof(addr_there);
+	if (::connect(sockfd, (struct sockaddr *)&addr_there, size) < 0 ){
 		if (errno == ECONNREFUSED){
 			cout << "Connection refused, accepting connections..." << endl;
 		}
@@ -49,11 +55,13 @@ bool SocketHandler::connect(){
 		}
 		return false;
 	}
+	cout << "PASSED" << endl;
 	return true;
 }
 
 void SocketHandler::bind(){
-	if (::bind(sockfd, (struct sockaddr *)&addr_here, (socklen_t) sizeof(addr_here)) < 0){
+	socklen_t size = sizeof(addr_here);
+	if (::bind(sockfd, (struct sockaddr *)&addr_here, size) < 0){
 		cerr << "Error : Impossible to link the socket" << endl;
 		exit(-3);
 	}
@@ -64,7 +72,8 @@ void SocketHandler::accept(){
 	bool flag = true;
 	while (flag){
 		struct sockaddr_in accepted_addr;
-		int in_sockfd = ::accept(sockfd, (struct sockaddr *)&accepted_addr, (socklen_t *) sizeof(accepted_addr));
+		socklen_t size = sizeof(accepted_addr);
+		int in_sockfd = ::accept(sockfd, (struct sockaddr *)&accepted_addr, &size);
 		if (in_sockfd < 0){
 			cerr << "Error : impossible to accept entering connection" << endl;
 			cerr << errno << endl;
@@ -73,6 +82,10 @@ void SocketHandler::accept(){
 		if ((accepted_addr.sin_port == addr_there.sin_port) && (accepted_addr.sin_addr.s_addr == addr_there.sin_addr.s_addr)){
 			sockfd = in_sockfd;
 			flag = false;
+		}
+		else{
+			cout << "Wrong connection attempted." << endl;
+			close(in_sockfd);
 		}
 	}
 	cout << "Entering connection accepted !" << endl;

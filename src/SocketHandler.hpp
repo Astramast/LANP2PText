@@ -6,6 +6,7 @@ using std::string;
 class SocketHandler{
 	public:
 		SocketHandler(const std::uint16_t& local_port, const std::uint16_t& remote_port, const string& remote_ip);
+		~SocketHandler();
 
 	private:
 	int sockfd;
