@@ -32,17 +32,13 @@ uint16_t port_input(const string& message){
 }
 
 int main(int argc, char *argv[]){
-	std::uint16_t port = port_input("Enter a local port (>1024) : ");
+	std::uint16_t local_port = port_input("Enter a local port (>1024) : ");
+	string remote_ip = input("Enter remote ip : ");
+	std::uint16_t remote_port = port_input("Enter remote port : ");
 	
-	SocketHandler socket(port);
-	string ip = input("Enter corresponding ip : ");
-	std::uint16_t corr_port = port_input("Enter corresponging port : ");
+	SocketHandler socket(local_port, remote_port, remote_ip);
 	
-	int corr_sockfd = socket.connect(ip, corr_port);
-	if (corr_sockfd < 0){
-		socket.accept();
-	}
-	
+	string useless = input("fin main : ");
     return 0;
 }
 

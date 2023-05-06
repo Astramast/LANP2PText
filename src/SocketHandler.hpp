@@ -5,15 +5,16 @@ using std::string;
 
 class SocketHandler{
 	public:
-		SocketHandler();
-		void connect(const string& ip, const std::uint16_t& port);
-		void bindSocket(const std::uint16_t& port);
-		int accept();
+		SocketHandler(const std::uint16_t& local_port, const std::uint16_t& remote_port, const string& remote_ip);
 
 	private:
 	int sockfd;
-	struct sockaddr_in addr;
+	struct sockaddr_in addr_there;
+	struct sockaddr_in addr_here;
 	
 		void createSocket();
+		bool connect();
+		void bind();
+		void accept();
 };
 
