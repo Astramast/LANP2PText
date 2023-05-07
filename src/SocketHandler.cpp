@@ -84,6 +84,7 @@ void SocketHandler::accept(){
 			flag = false;
 		}
 		else{
+			cout << accepted_addr.sin_port <<" "<< addr_there.sin_port <<" "<< accepted_addr.sin_addr.s_addr <<" "<< addr_there.sin_addr.s_addr << endl;
 			cout << "Wrong connection attempted." << endl;
 			close(in_sockfd);
 		}
