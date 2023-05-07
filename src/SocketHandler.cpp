@@ -17,8 +17,8 @@ SocketHandler::SocketHandler(const std::uint16_t& local_port, const std::uint16_
 	addr_here.sin_addr.s_addr = INADDR_ANY;
 	//init P2P procedure
 	createSocket();
+	bind();
 	if (!connect()){
-		bind();
 		accept();
 	}
 	cout << "OUT"<< endl;
@@ -84,7 +84,7 @@ void SocketHandler::accept(){
 			flag = false;
 		}
 		else{
-			cout << accepted_addr.sin_port <<" "<< addr_there.sin_port <<" "<< accepted_addr.sin_addr.s_addr <<" "<< addr_there.sin_addr.s_addr << endl;
+			cout << accepted_addr.sin_port <<" "<< ntohs(addr_there.sin_port) <<" "<< accepted_addr.sin_addr.s_addr <<" "<< addr_there.sin_addr.s_addr << endl;
 			cout << "Wrong connection attempted." << endl;
 			close(in_sockfd);
 		}
