@@ -4,6 +4,8 @@ using std::cout, std::endl, std::cin;
 using std::string, std::stoi;
 #include <exception>
 using std::exception;
+#include <thread>
+using std::thread;
 #include "SocketHandler.hpp"
 
 string input(const string& message){
