@@ -6,7 +6,8 @@ using std::string;
 class SocketHandler{
 	public:
 		SocketHandler(const std::uint16_t& local_port, const std::uint16_t& remote_port, const string& remote_ip);
-		~SocketHandler();
+		bool sockread(char buffer[1024]);
+		void sockwrite(const char buffer[1024]);
 
 	private:
 	int sockfd;

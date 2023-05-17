@@ -24,13 +24,34 @@ SocketHandler::SocketHandler(const std::uint16_t& local_port, const std::uint16_
 	cout << "OUT"<< endl;
 }
 
-SocketHandler::~SocketHandler(){
-	close(sockfd);
-}
-
 // Public methods
 
 //TODO read & write
+bool SocketHandler::sockread(char buffer[1024]){
+	std::uint16_t i = 0;
+	ssize_t written = 0;
+	while (i<1024){
+		written = recv(sockfd, buffer, 1024-i, 0);
+		if (written < 0){
+			cerr << "Error while receiving information." << endl;
+			exit(errno);
+		}
+		if (written == 0){
+			cout << "Peer disconnected. Disconnecting..." << endl;
+			close(sockfd);
+			return false;
+		}
+		i += written;
+	}
+	return true;
+}
+
+void SocketHandler::sockwrite(const char buffer[1024]){
+	if (send(sockfd, buffer, 1024, 0) < 0){
+		cerr << "Error while sending information." << endl;
+		exit(errno);
+	}
+}
 
 // Private methods
 
@@ -39,7 +60,15 @@ void SocketHandler::createSocket(){
 
 	if (sockfd == -1){
 		cerr << "Error : Impossible to create the socket" << endl;
-		exit(-1);
+		exit(errno);
+	}
+}
+
+void SocketHandler::bind(){
+	socklen_t size = sizeof(addr_here);
+	if (::bind(sockfd, (struct sockaddr *)&addr_here, size) < 0){
+		cerr << "Error : Impossible to link the socket" << endl;
+		exit(errno);
 	}
 }
 
@@ -51,20 +80,12 @@ bool SocketHandler::connect(){
 		}
 		else{
 			cout << "Error : Connection failed." << endl;
-			exit(-2);
+			exit(errno);
 		}
 		return false;
 	}
 	cout << "PASSED" << endl;
 	return true;
-}
-
-void SocketHandler::bind(){
-	socklen_t size = sizeof(addr_here);
-	if (::bind(sockfd, (struct sockaddr *)&addr_here, size) < 0){
-		cerr << "Error : Impossible to link the socket" << endl;
-		exit(-3);
-	}
 }
 
 void SocketHandler::accept(){
@@ -76,15 +97,13 @@ void SocketHandler::accept(){
 		int in_sockfd = ::accept(sockfd, (struct sockaddr *)&accepted_addr, &size);
 		if (in_sockfd < 0){
 			cerr << "Error : impossible to accept entering connection" << endl;
-			cerr << errno << endl;
-			exit(-4);
+			exit(errno);
 		}
 		if ((accepted_addr.sin_port == addr_there.sin_port) && (accepted_addr.sin_addr.s_addr == addr_there.sin_addr.s_addr)){
 			sockfd = in_sockfd;
 			flag = false;
 		}
 		else{
-			cout << accepted_addr.sin_port <<" "<< ntohs(addr_there.sin_port) <<" "<< accepted_addr.sin_addr.s_addr <<" "<< addr_there.sin_addr.s_addr << endl;
 			cout << "Wrong connection attempted." << endl;
 			close(in_sockfd);
 		}
