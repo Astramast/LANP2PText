@@ -4,6 +4,8 @@ using std::cout, std::endl, std::cin;
 using std::string, std::stoi;
 #include <exception>
 using std::exception;
+#include <thread>
+using std::thread;
 #include "SocketHandler.hpp"
 
 string input(const string& message){
@@ -38,7 +40,10 @@ int main(int argc, char *argv[]){
 	
 	SocketHandler socket(local_port, remote_port, remote_ip);
 	
-	string useless = input("fin main : ");
+	thread in();
+	thread out();
+	
+	string useless = input("fin main : "); #TODO Remove
     return 0;
 }
 
