@@ -40,10 +40,10 @@ int main(int argc, char *argv[]){
 	
 	SocketHandler socket(local_port, remote_port, remote_ip);
 	
-	thread in();
-	thread out();
+	//thread in();
+	//thread out();
 	
-	string useless = input("fin main : "); #TODO Remove
+	string useless = input("fin main : "); //TODO Remove
     return 0;
 }
 
