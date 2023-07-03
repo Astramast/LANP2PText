@@ -6,6 +6,10 @@ using std::string, std::stoi;
 using std::exception;
 #include <thread>
 using std::thread;
+#include <cstring>
+using std::memset;
+#include <memory>
+using std::shared_ptr, std::make_shared;
 #include "SocketHandler.hpp"
 
 string input(const string& message){
@@ -33,15 +37,47 @@ uint16_t port_input(const string& message){
 	return static_cast<std::uint16_t>(input_number);
 }
 
-int main(int argc, char *argv[]){
+void writeAndSend(shared_ptr<SocketHandler> socket){
+	while(socket->isopen()){
+		string message = input("");
+		if (message == "/exit"){
+			break;
+		}
+		int n = message.length()/1023;
+		for(int i=0; i<n+1; i++){
+			std::string msg = message.substr(i*1023, 1023);
+			char buffer[1024];
+			copy(msg.begin(), msg.end(), buffer);
+			buffer[msg.size()] = '\0';
+			socket->sockwrite(buffer);
+			memset(buffer, 0, sizeof(buffer));
+		}
+	}
+	socket->close();
+}
+
+void readAndPrint(shared_ptr<SocketHandler> socket){
+	char buffer[1024];
+	while(socket->isopen()){
+		if(socket->sockread(buffer)){
+			cout << buffer << endl;
+		}
+		else{break;}
+	}
+}
+
+int main(){
 	std::uint16_t local_port = port_input("Enter a local port (>1024) : ");
 	string remote_ip = input("Enter remote ip : ");
 	std::uint16_t remote_port = port_input("Enter remote port : ");
 	
-	SocketHandler socket(local_port, remote_port, remote_ip);
+	shared_ptr<SocketHandler> socket = make_shared<SocketHandler>(local_port, remote_port, remote_ip);
 	
-	//thread in();
-	//thread out();
+	thread in(readAndPrint, socket);
+	thread out(writeAndSend, socket);
+
+	in.join();
+	out.join();
 	
 	string useless = input("fin main : "); //TODO Remove
     return 0;

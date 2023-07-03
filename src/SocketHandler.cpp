@@ -21,12 +21,10 @@ SocketHandler::SocketHandler(const std::uint16_t& local_port, const std::uint16_
 	if (!connect()){
 		accept();
 	}
-	cout << "OUT"<< endl;
 }
 
 // Public methods
 
-//TODO read & write
 bool SocketHandler::sockread(char buffer[1024]){
 	std::uint16_t i = 0;
 	ssize_t written = 0;
@@ -38,7 +36,7 @@ bool SocketHandler::sockread(char buffer[1024]){
 		}
 		if (written == 0){
 			cout << "Peer disconnected. Disconnecting..." << endl;
-			close(sockfd);
+			::close(sockfd);
 			return false;
 		}
 		i += written;
@@ -51,6 +49,15 @@ void SocketHandler::sockwrite(const char buffer[1024]){
 		cerr << "Error while sending information." << endl;
 		exit(errno);
 	}
+}
+
+bool SocketHandler::isopen(){
+	return is_open;
+}
+
+void SocketHandler::close(){
+	is_open = false;
+	::close(sockfd);
 }
 
 // Private methods
@@ -84,7 +91,6 @@ bool SocketHandler::connect(){
 		}
 		return false;
 	}
-	cout << "PASSED" << endl;
 	return true;
 }
 
@@ -105,7 +111,7 @@ void SocketHandler::accept(){
 		}
 		else{
 			cout << "Wrong connection attempted." << endl;
-			close(in_sockfd);
+			::close(in_sockfd);
 		}
 	}
 	cout << "Entering connection accepted !" << endl;

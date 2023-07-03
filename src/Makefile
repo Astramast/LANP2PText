@@ -6,7 +6,7 @@ BINS = $(filter-out main.o, $(patsubst %.cpp, %.o, $(wildcard *.cpp)))
 default: main clean
 
 main: ${BINS}
-	${CXX} ${CXXFLAGS} $^ main.cpp -o LANP2PChat
+	${CXX} ${CXXFLAGS} $^ main.cpp -o LANP2PChat -pthread
 
 %.o: %.cpp
 	${CXX} ${CXXFLAGS} $< -c -o $@
